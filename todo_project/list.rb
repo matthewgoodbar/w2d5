@@ -2,6 +2,8 @@ require_relative "item.rb"
 
 class List
 
+    PRINT_LINE = 56
+
     attr_accessor :label
 
     def initialize(label)
@@ -34,6 +36,23 @@ class List
         return true
     end
 
+    def toggle_item(index)
+        return false unless valid_index?(index)
+        self[index].toggle
+        return true
+    end
+
+    def remove_item(index)
+        return false unless valid_index?(index)
+        @items.reject!.with_index {|item, i| i == index}
+        return true
+    end
+
+    def purge
+        @items.reject! {|item| item.done}
+        return true
+    end
+
     def [](index)
         return nil unless valid_index?(index)
         return @items[index]
@@ -44,24 +63,24 @@ class List
     end
 
     def print
-        puts "".ljust(48, "-")
+        puts "".ljust(PRINT_LINE, "-")
         puts "".ljust(20) + self.label.upcase
-        puts "".ljust(48, "-")
-        puts "Index " + "| Item".ljust(30) + "| Deadline".ljust(10)
-        puts "".ljust(48, "-")
+        puts "".ljust(PRINT_LINE, "-")
+        puts "Index " + "| Item".ljust(30) + "| Deadline".ljust(13) + "| Done?"
+        puts "".ljust(PRINT_LINE, "-")
         @items.each_with_index do |item, i|
-            puts "#{i}".ljust(6) + "| #{item.title}".ljust(30) + "| #{item.deadline}"
+            puts "#{i}".ljust(6) + "| #{item.title}".ljust(30) + "| #{item.deadline} " + "| #{item.done ? "[X]" : "[ ]"}"
         end
-        puts "".ljust(48, "-")
+        puts "".ljust(PRINT_LINE, "-")
     end
 
     def print_full_item(index)
         return unless valid_index?(index)
         item = self[index]
-        puts "".ljust(48, "-")
-        puts "#{item.title}".ljust(38) + "#{item.deadline}"
-        puts "#{item.description}".ljust(48) if item.description != ""
-        puts "".ljust(48, "-")
+        puts "".ljust(PRINT_LINE, "-")
+        puts "#{item.title}".ljust(PRINT_LINE-14) + "#{item.deadline} #{item.done ? "[X]" : "[ ]"}"
+        puts "#{item.description}".ljust(PRINT_LINE) if item.description != ""
+        puts "".ljust(PRINT_LINE, "-")
     end
 
     def print_priority
